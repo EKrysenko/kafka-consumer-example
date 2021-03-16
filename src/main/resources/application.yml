@@ -1,0 +1,25 @@
+spring:
+  kafka:
+    bootstrap-servers: your-kafka-url-with:port
+    client-id: eventhub-kafka-consumer
+#    for azure event hub
+    properties:
+      sasl.jaas.config: your-jaas-config
+      sasl.mechanism: PLAIN
+      security.protocol: SASL_SSL
+    consumer:
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      group-id: ekrysenko_consumer_group
+      properties.spring:
+        deserializer:
+          key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+          value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        json:
+          trusted.packages: "*"
+          value.default.type: com.elcompanies.eventhubkafkaconsumer.model.ConsumerMessage
+#          if you don't need to use type info from message header
+          remove.type.headers: true
+          use.type.headers: false
+
+topics:
+  subscriber: your-topic-name
