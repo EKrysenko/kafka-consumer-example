@@ -2,6 +2,7 @@ package com.elcompanies.eventhubkafkaconsumer.consumer;
 
 import com.elcompanies.eventhubkafkaconsumer.model.ConsumerMessage;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.TopicPartition;
 import org.springframework.kafka.support.Acknowledgment;
@@ -24,18 +25,22 @@ public class KafkaMessageConsumer {
 //        log.info("Received message from topic: {}", message);
 //        Thread.sleep(60000);
 //    }
-    public void onMessage(ConsumerMessage record, Acknowledgment ack) {
-        log.info("Received record {}", record);
-        final String message = record.getMessage();
-        final int processAtMinutes = record.getProcessAtMinutes();
+    public void onMessage(ConsumerRecord<String, ConsumerMessage> record, Acknowledgment ack) {
+        log.info("Received record from topic: {}, partition: {}, offset: {}, message: {}",
+                record.topic(),  record.partition(), record.offset(), record.value());
+        final String message = record.value().getMessage();
+        final int processAtMinutes = record.value().getProcessAtMinutes();
         final int minutesNow = LocalDateTime.now().getMinute();
-        if (minutesNow < processAtMinutes) {
-            log.error("Сообщение с кодом {} пришло слишком рано, будет обработано через {} минут",
-                    processAtMinutes, processAtMinutes - minutesNow);
-            ack.nack(20);
-        } else {
-            log.info("Commit offset for message {}", message);
-            ack.acknowledge();
-        }
+//        if (minutesNow < processAtMinutes) {
+//            log.error("Сообщение с кодом {} пришло слишком рано, будет обработано через {} минут",
+//                    processAtMinutes, processAtMinutes - minutesNow);
+//            ack.nack(20);
+//        } else {
+//            log.info("Commit offset for message {}", message);
+//            ack.acknowledge();
+//        }
+//        log.error("Вижу сообщение {}, но не коммичу оффсет {}", message, record.offset());
+        log.error("Вижу сообщение {}, коммичу оффсет {}", message, record.offset());
+        ack.acknowledge();
     }
 }
