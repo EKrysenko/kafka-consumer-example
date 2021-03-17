@@ -32,7 +32,7 @@ public class KafkaMessageConsumer {
         if (minutesNow < processAtMinutes) {
             log.error("Сообщение с кодом {} пришло слишком рано, будет обработано через {} минут",
                     processAtMinutes, processAtMinutes - minutesNow);
-            ack.nack(20);
+            ack.nack(10000);
         } else {
             log.info("Commit offset for message {}", message);
             ack.acknowledge();

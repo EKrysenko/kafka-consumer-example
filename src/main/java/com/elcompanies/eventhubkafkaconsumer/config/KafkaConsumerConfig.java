@@ -1,5 +1,6 @@
 package com.elcompanies.eventhubkafkaconsumer.config;
 
+import com.elcompanies.eventhubkafkaconsumer.model.ConsumerMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.kafka.ConcurrentKafkaListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
@@ -15,12 +16,11 @@ public class KafkaConsumerConfig {
 
     @Bean
     @ConditionalOnMissingBean(name = "kafkaListenerContainerFactory")
-    public ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory(
-            ConcurrentKafkaListenerContainerFactoryConfigurer configurer,
-            ConsumerFactory<Object, Object> kafkaConsumerFactory) {
-        ConcurrentKafkaListenerContainerFactory<Object, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
+    public ConcurrentKafkaListenerContainerFactory<String, ConsumerMessage> kafkaListenerContainerFactory(
+            ConsumerFactory<String, ConsumerMessage> kafkaConsumerFactory) {
+        ConcurrentKafkaListenerContainerFactory<String, ConsumerMessage> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
-        configurer.configure(factory, kafkaConsumerFactory);
+        factory.setConsumerFactory(kafkaConsumerFactory);
         return factory;
     }
 }
